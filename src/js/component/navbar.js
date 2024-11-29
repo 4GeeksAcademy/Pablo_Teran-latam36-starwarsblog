@@ -1,17 +1,37 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { Context } from "../store/appContext";
 
 export const Navbar = () => {
-	return (
-		<nav className="navbar navbar-light bg-light mb-3">
-			<Link to="/">
-				<span className="navbar-brand mb-0 h1">React Boilerplate</span>
-			</Link>
-			<div className="ml-auto">
-				<Link to="/demo">
-					<button className="btn btn-primary">Check the Context in action</button>
-				</Link>
-			</div>
-		</nav>
-	);
+    const { store, actions } = useContext(Context);
+
+    const removeFavorite = (uid) => {
+        actions.removeFavorite(uid);
+    };
+
+    return (
+        <nav className="navbar navbar-light bg-light mb-3 d-flex justify-content-between">
+            <Link to="/">
+                <img src="https://logowik.com/content/uploads/images/528_star_wars.jpg" alt="Star Wars Logo" height="50" />
+            </Link>
+            <div className="ml-auto">
+                <div className="dropdown">
+                    <button className="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        Favorites <span className="badge bg-light text-dark">{store.favorites.length}</span>
+                    </button>
+                    <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        {store.favorites.map((fav, index) => (
+                            <li key={index} className="d-flex justify-content-between align-items-center">
+                                <span>{fav.name}</span>
+                                <button className="btn btn-danger btn-sm" onClick={() => removeFavorite(fav.uid)}>
+                                    <i className="fa fa-trash"></i>
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    );
 };
+
