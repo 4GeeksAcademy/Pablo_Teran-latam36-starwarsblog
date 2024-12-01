@@ -12,23 +12,44 @@ export const Detail = () => {
 
     useEffect(() => {
         const item = store[type]?.find((el) => el.uid === uid);
+
         if (item) {
-            setDetails(item);
+            console.log("Item found in store:", item);
+            // Realizamos la solicitud a la URL para obtener los detalles completos
+            fetch(item.url)
+                .then((res) => res.json())
+                .then((data) => {
+                    console.log("Data from API:", data);
+                    if (data.result && data.result.properties) {
+                        console.log("Properties from API:", data.result.properties);
+                        setDetails(data.result.properties);
+                    }
+                })
+                .catch((err) => console.error("Error al obtener detalles:", err));
         } else {
+            // Si no se encuentra en el store, realizamos la solicitud directamente a la API
             fetch(`https://www.swapi.tech/api/${type}/${uid}`)
                 .then((res) => res.json())
                 .then((data) => {
-                    setDetails({
-                        ...data.result.properties,
-                        type,
-                        uid,
-                    });
+                    console.log("Data from API (else case):", data);
+                    if (data.result && data.result.properties) {
+                        console.log("Properties from API (else case):", data.result.properties);
+                        setDetails(data.result.properties);
+                    }
                 })
                 .catch((err) => console.error("Error al obtener detalles:", err));
         }
     }, [store, type, uid]);
 
-    if (!details) return <div>Loading...</div>;
+    if (!details) return <div>Loading...</div>; // Mostrar cargando mientras se obtienen los datos
+
+    // Mapeamos las propiedades para hacerlas más legibles
+    const formattedDetails = Object.entries(details).map(([key, value]) => {
+        const formattedKey = key
+            .replace(/_/g, " ") // Reemplazamos guiones bajos por espacios
+            .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalizamos la primera letra
+        return { label: formattedKey, value };
+    });
 
     return (
         <div className="container mt-5">
@@ -45,9 +66,11 @@ export const Detail = () => {
                     <div className="col-md-8">
                         <div className="card-body">
                             <h1 className="card-title">{details.name}</h1>
-                            {Object.keys(details).map((key) => (
-                                <p key={key}>
-                                    <strong>{key.replace("_", " ")}:</strong> {details[key]}
+
+                            {/* Mostrar todas las propiedades dinámicamente */}
+                            {formattedDetails.map((detail, index) => (
+                                <p key={index}>
+                                    <strong>{detail.label}:</strong> {detail.value || "N/A"}
                                 </p>
                             ))}
                         </div>

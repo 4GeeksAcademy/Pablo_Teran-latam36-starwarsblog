@@ -5,8 +5,8 @@ import { Context } from "../store/appContext";
 export const Navbar = () => {
     const { store, actions } = useContext(Context);
 
-    const removeFavorite = (uid) => {
-        actions.removeFavorite(uid);
+    const removeFavorite = (uid, type) => {
+        actions.removeFavorite(uid, type);
     };
 
     return (
@@ -19,11 +19,21 @@ export const Navbar = () => {
                     <button className="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                         Favorites <span className="badge bg-light text-dark">{store.favorites.length}</span>
                     </button>
-                    <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <ul 
+                        className="dropdown-menu dropdown-menu-end" 
+                        aria-labelledby="dropdownMenuButton" 
+                        style={{
+                            maxHeight: "200px",
+                            overflowY: "auto",
+                            right: "0", 
+                            left: "auto",
+                            transform: "translateX(-20px)" 
+                        }}
+                    >
                         {store.favorites.map((fav, index) => (
                             <li key={index} className="d-flex justify-content-between align-items-center">
                                 <span>{fav.name}</span>
-                                <button className="btn btn-danger btn-sm" onClick={() => removeFavorite(fav.uid)}>
+                                <button className="btn btn-danger btn-sm" onClick={() => removeFavorite(fav.uid, fav.type)}>
                                     <i className="fa fa-trash"></i>
                                 </button>
                             </li>
@@ -34,4 +44,3 @@ export const Navbar = () => {
         </nav>
     );
 };
-

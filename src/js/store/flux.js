@@ -22,14 +22,28 @@ const getState = ({ getStore, getActions, setStore }) => {
                     .catch((err) => console.error(err));
             },
 
-            toggleFavorite: (item) => {
+            toggleFavorite: (item, type) => {
                 const store = getStore();
-                const exists = store.favorites.some((fav) => fav.uid === item.uid);
+                const itemWithType = { ...item, type }; 
+                const favoritesUpdated = store.favorites.some(
+                    fav => fav.uid === item.uid && fav.type === type 
+                )
+                    ? store.favorites.filter(
+                          fav => !(fav.uid === item.uid && fav.type === type)
+                      ) 
+                    : [...store.favorites, itemWithType]; 
 
                 setStore({
-                    favorites: exists
-                        ? store.favorites.filter((fav) => fav.uid !== item.uid)
-                        : [...store.favorites, item],
+                    favorites: favoritesUpdated,
+                });
+            },
+
+            removeFavorite: (uid, type) => {
+                const store = getStore();
+                setStore({
+                    favorites: store.favorites.filter(
+                        fav => !(fav.uid === uid && fav.type === type) 
+                    ),
                 });
             },
         },

@@ -4,10 +4,12 @@ import { Context } from "../store/appContext";
 
 export const Card = ({ item, type }) => {
     const { store, actions } = useContext(Context);
-    const isFavorite = store.favorites.some(fav => fav.uid === item.uid);
+    const isFavorite = store.favorites.some(
+        fav => fav.uid === item.uid && fav.type === type 
+    );
 
     const toggleFavorite = () => {
-        actions.toggleFavorite(item);
+        actions.toggleFavorite(item, type); 
     };
 
     return (
